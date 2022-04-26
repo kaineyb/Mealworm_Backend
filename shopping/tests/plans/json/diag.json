@@ -1,7 +1,7 @@
 {
   "name": ["Awesome Plan"],
   "start_day": ["Tue"],
-  "plan_days": [
+  "day_set": [
     "{'id': 1, 'order': 1, 'meal': 1}",
     "{'order': 2, 'meal': 2}",
     "{'order': 3, 'meal': 3}"

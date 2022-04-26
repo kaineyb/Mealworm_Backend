@@ -90,12 +90,12 @@ class TestAuthUser(APITestCase):
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
 
-    def test_post_data_with_plan_days_blank_returns_valid_201_created(self):
+    def test_post_data_with_day_set_blank_returns_valid_201_created(self):
         """
-        Ensure valid data can be posted with a blank plan_days
+        Ensure valid data can be posted with a blank day_set
         """
 
-        data = {"name": "My Awesome Plan", "start_day": "Tue", "plan_days": []}
+        data = {"name": "My Awesome Plan", "start_day": "Tue", "day_set": []}
         url = endpoint()
 
         response = self.client.post(url, data, format="json")
@@ -104,11 +104,11 @@ class TestAuthUser(APITestCase):
         assert response.data["id"] > 0
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
-        assert response.data["plan_days"] == data["plan_days"]
+        assert response.data["day_set"] == data["day_set"]
 
-    def test_post_data_with_plan_days_correct_returns_valid_201_created(self):
+    def test_post_data_with_day_set_correct_returns_valid_201_created(self):
         """
-        Ensure valid data can be posted with a correct plan_days
+        Ensure valid data can be posted with a correct day_set
         """
 
         # Arrange
@@ -122,7 +122,7 @@ class TestAuthUser(APITestCase):
             {"order": 3, "meal": meal_three.id},
         ]
 
-        data = {"name": "My Awesome Plan", "start_day": "Tue", "plan_days": days}
+        data = {"name": "My Awesome Plan", "start_day": "Tue", "day_set": days}
 
         url = endpoint()
 
@@ -132,4 +132,4 @@ class TestAuthUser(APITestCase):
         assert response.data["id"] > 0
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
-        assert response.data["plan_days"] != []
+        assert response.data["day_set"] != []

@@ -93,7 +93,7 @@ class TestAuthUser(APITestCase):
         assert response.data["name"] == plan.name
         assert response.data["start_day"] == plan.start_day
 
-        assert response.data["plan_days"] == [
+        assert response.data["day_set"] == [
             OrderedDict(
                 [
                     ("id", day_one.id),

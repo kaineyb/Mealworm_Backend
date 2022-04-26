@@ -1,7 +1,7 @@
 {
   "name": "Test Plan 6668222222222",
   "start_day": "Sat",
-  "plan_days": [
+  "day_set": [
     {
       "id": 30,
       "order": 3,

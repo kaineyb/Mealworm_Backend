@@ -1,7 +1,7 @@
 {
   "name": "My Awesome new plan",
   "start_day": "Tue",
-  "plan_days": [
+  "day_set": [
     {
       "order": 1,
       "meal": 4

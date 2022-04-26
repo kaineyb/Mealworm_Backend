@@ -46,7 +46,7 @@ class TestAuthUser(APITestCase):
         user = User.objects.get(pk=self.user["id"])
         self.client.force_authenticate(user=user)
 
-    def test_plan_days_have_both_day_and_meal_id(self):
+    def test_day_set_has_both_day_and_meal_id(self):
         """
         Checks that we have both a Plan ID and a Day ID
         """
@@ -61,10 +61,10 @@ class TestAuthUser(APITestCase):
 
         # We want to see a dictionary like the below:
         # {"id": 1, "order": 1, "meal":  meal.id}
-        plan_days = OrderedDict()
-        plan_days["id"] = day.id
-        plan_days["order"] = day.order
-        plan_days["meal"] = meal.id
+        day_set = OrderedDict()
+        day_set["id"] = day.id
+        day_set["order"] = day.order
+        day_set["meal"] = meal.id
 
         # Act
         response = self.client.get(url)
@@ -76,4 +76,4 @@ class TestAuthUser(APITestCase):
         assert response.data["id"] == plan.id
         assert response.data["name"] == plan.name
         assert response.data["start_day"] == plan.start_day
-        assert response.data["plan_days"] == [plan_days]
+        assert response.data["day_set"] == [day_set]

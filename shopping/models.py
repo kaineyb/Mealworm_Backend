@@ -130,8 +130,8 @@ class Day(models.Model):
     # plan = models.ForeignKey(Plan, on_delete=models.CASCADE, related_name="plan_days")
     # meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="plan_meals")
 
-    plan = models.ForeignKey(Plan, on_delete=models.CASCADE, related_name="plan_days")
-    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="plan_meals")
+    plan = models.ForeignKey(Plan, on_delete=models.CASCADE)
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE)
 
     order = models.IntegerField(validators=[MinValueValidator(1)])
 

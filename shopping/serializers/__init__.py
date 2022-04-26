@@ -219,18 +219,18 @@ class DaySerializer(serializers.ModelSerializer):
 
 
 class PlanSerializer(serializers.ModelSerializer):
-    plan_days = DaySerializer(many=True, required=False)
+    day_set = DaySerializer(many=True, required=False)
 
     class Meta:
         model = Plan
-        fields = ["id", "name", "start_day", "plan_days"]
+        fields = ["id", "name", "start_day", "day_set"]
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
 
             list_of_days = (
-                self.validated_data.pop("plan_days")
-                if self.validated_data.get("plan_days")
+                self.validated_data.pop("day_set")
+                if self.validated_data.get("day_set")
                 else False
             )
 
@@ -242,29 +242,29 @@ class PlanSerializer(serializers.ModelSerializer):
             if list_of_days:
 
                 for instance in list_of_days:
-                    new_plan.plan_days.create(**instance)
+                    new_plan.day_set.create(**instance)
 
                 # Day.objects.bulk_create(instances)
                 print("*" * 20)
                 print("instances", list_of_days)
                 print("*" * 20)
 
-            # Check if plan_days key exists, could also be [] which is Falsey.
+            # Check if day_set key exists, could also be [] which is Falsey.
 
             return new_plan
 
 
 class UpdatePlanSerializer(serializers.ModelSerializer):
-    plan_days = DaySerializer(many=True, required=False)
+    day_set = DaySerializer(many=True, required=False)
 
     class Meta:
         model = Plan
-        fields = ["name", "start_day", "plan_days"]
+        fields = ["name", "start_day", "day_set"]
 
     def update(self, instance: Plan, validated_data: dict):
 
         print("initial_data", self.initial_data)
-        # print("initial_data plan_days", self.initial_data["plan_days"])
+        # print("initial_data day_set", self.initial_data["day_set"])
 
         print("validators", self.get_validators())
 
@@ -277,10 +277,10 @@ class UpdatePlanSerializer(serializers.ModelSerializer):
         instance.name = validated_data["name"]
         instance.start_day = validated_data["start_day"]
 
-        if validated_data.get("plan_days"):
-            print("Got plan_days in validated data")
-            nested_serializer = self.fields["plan_days"]
-            nested_serializer.update(validated_data["plan_days"])
+        if validated_data.get("day_set"):
+            print("Got day_set in validated data")
+            nested_serializer = self.fields["day_set"]
+            nested_serializer.update(validated_data["day_set"])
 
         instance.save()
 
