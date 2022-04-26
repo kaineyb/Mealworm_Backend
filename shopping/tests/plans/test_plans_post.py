@@ -133,3 +133,15 @@ class TestAuthUser(APITestCase):
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
         assert response.data["day_set"] != []
+
+        assert response.data["day_set"] == [
+            OrderedDict(
+                [("id", 1), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
+            ),
+            OrderedDict(
+                [("id", 2), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
+            ),
+            OrderedDict(
+                [("id", 3), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
+            ),
+        ]

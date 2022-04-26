@@ -151,12 +151,24 @@ class DayListSerializer(serializers.ListSerializer):
         """
         Check that the start is before the stop.
         """
-        print("UPS Validate Called", data)
+        print("*" * 20)
+        print("DayListSerializer validate() called with:", data)
+        print("*" * 20)
+
         return data
+
+    def create(self, request, *args, **kwargs):
+        print("*" * 20)
+        print("DayListSerializer create() fired")
+        print("nothing happened")
+        print("*" * 20)
 
     def update(self, validated_data):
 
-        print("Update DayListSerializer Fired")
+        print("*" * 20)
+        print("DayListSerializer update()  fired")
+        print("Received data:", validated_data)
+        print("*" * 20)
 
         updated_day: OrderedDict
         self.child: DaySerializer
@@ -228,28 +240,21 @@ class PlanSerializer(serializers.ModelSerializer):
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
 
-            list_of_days = (
+            day_set = (
                 self.validated_data.pop("day_set")
                 if self.validated_data.get("day_set")
                 else False
             )
 
-            print("self.validated_data", self.validated_data)
+            if self.validated_data.get("day_set") == []:
+                del self.validated_data["day_set"]
 
             user_id = self.context["user_id"]
             new_plan: Plan = Plan.objects.create(user_id=user_id, **self.validated_data)
 
-            if list_of_days:
-
-                for instance in list_of_days:
+            if day_set:
+                for instance in day_set:
                     new_plan.day_set.create(**instance)
-
-                # Day.objects.bulk_create(instances)
-                print("*" * 20)
-                print("instances", list_of_days)
-                print("*" * 20)
-
-            # Check if day_set key exists, could also be [] which is Falsey.
 
             return new_plan
 
