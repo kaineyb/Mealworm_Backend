@@ -1,0 +1,10 @@
+{
+  "name": "My Awesome new plan",
+  "start_day": "Tue",
+  "plan_days": [
+    {
+      "order": 1,
+      "meal": 4
+    }
+  ]
+}

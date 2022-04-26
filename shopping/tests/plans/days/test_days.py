@@ -100,8 +100,7 @@ class TestAuthUser(APITestCase):
         assert response.data["id"] > 0
         assert response.data["order"] == day.order
 
-        assert response.data["meal"]["id"] == self.meal.id
-        assert response.data["meal"]["name"] == self.meal.name
+        assert response.data["meal"] == self.meal.id
 
     def test_patch_data_returns_valid_200_ok(self):
 

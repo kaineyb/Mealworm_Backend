@@ -68,4 +68,4 @@ class TestAuthUser(APITestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["name"] == data["name"]
-        assert False
+        # assert False

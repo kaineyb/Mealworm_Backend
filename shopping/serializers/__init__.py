@@ -1,4 +1,4 @@
-from statistics import mode
+from collections import OrderedDict
 from rest_framework import serializers
 from django.db import transaction
 from ..models import (
@@ -22,6 +22,7 @@ from .fields import (
     IngredientsOfUserPrimaryKeyRelatedField,
     SectionsOfUserPrimaryKeyRelatedField,
 )
+
 
 # Store Endpoint
 
@@ -146,21 +147,79 @@ class CreateDaySerializer(serializers.ModelSerializer):
 
 
 class DayListSerializer(serializers.ListSerializer):
-    pass
+    def validate(self, data):
+        """
+        Check that the start is before the stop.
+        """
+        print("UPS Validate Called", data)
+        return data
+
+    def update(self, validated_data):
+
+        print("Update DayListSerializer Fired")
+
+        updated_day: OrderedDict
+        self.child: DaySerializer
+        list_of_instances = []
+
+        for updated_day in validated_data:
+            id = updated_day.get("id")
+            order = updated_day.get("order")
+
+            day_object: Day = Day.objects.filter(pk=id).first()
+
+            meal = updated_day.get("meal")
+            meal_object = Meal.objects.filter(pk=meal.id).first()
+
+            data = {
+                "order": order,
+                "meal": meal,
+            }
+
+            # First check that this meal is for that user, and if it isn't we don't do anything.
+
+            if not meal_object.user_id == self.context["user_id"]:
+                continue
+
+            # We check if this is an existing day or not.
+
+            if id and day_object:
+                # Update Day
+
+                list_of_instances.append(self.child.update(day_object, data))
+                print(
+                    "Updating:",
+                    updated_day,
+                    "with data",
+                    {"order": order, "meal": meal},
+                )
+            else:
+                # New Day, create one with data
+                print("day has not id, creating day")
+                list_of_instances.append(self.child.create(data))
+
+        return list_of_instances
 
 
 class DaySerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField()
-    meal = SimpleMealSerializer()
+    id = serializers.IntegerField(required=False)
 
     class Meta:
         model = Day
         fields = ["id", "order", "meal"]
         list_serializer_class = DayListSerializer
 
+    def update(self, instance: Day, validated_data):
+        print("Update DaySerializer Fired")
+        instance.order = validated_data["order"]
+        instance.meal = validated_data["meal"]
+        instance.save()
+
+        return instance
+
 
 class PlanSerializer(serializers.ModelSerializer):
-    plan_days = DaySerializer(many=True)
+    plan_days = DaySerializer(many=True, required=False)
 
     class Meta:
         model = Plan
@@ -168,37 +227,64 @@ class PlanSerializer(serializers.ModelSerializer):
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
+
+            list_of_days = (
+                self.validated_data.pop("plan_days")
+                if self.validated_data.get("plan_days")
+                else False
+            )
+
+            print("self.validated_data", self.validated_data)
+
             user_id = self.context["user_id"]
-            return Plan.objects.create(user_id=user_id, **self.validated_data)
+            new_plan: Plan = Plan.objects.create(user_id=user_id, **self.validated_data)
+
+            if list_of_days:
+
+                for instance in list_of_days:
+                    new_plan.plan_days.create(**instance)
+
+                # Day.objects.bulk_create(instances)
+                print("*" * 20)
+                print("instances", list_of_days)
+                print("*" * 20)
+
+            # Check if plan_days key exists, could also be [] which is Falsey.
+
+            return new_plan
 
 
 class UpdatePlanSerializer(serializers.ModelSerializer):
-    plan_days = DaySerializer(many=True)
+    plan_days = DaySerializer(many=True, required=False)
 
     class Meta:
         model = Plan
         fields = ["name", "start_day", "plan_days"]
 
-    def update(self, instance: Plan, validated_data):
+    def update(self, instance: Plan, validated_data: dict):
 
-        name = self.validated_data["name"]
-        start_day = self.validated_data["start_day"]
-        Plan.objects.filter(id=instance.pk).update(name=name, start_day=start_day)
+        print("initial_data", self.initial_data)
+        # print("initial_data plan_days", self.initial_data["plan_days"])
 
-        nested_serializer = self.fields["plan_days"]
-        print(nested_serializer)
-        nested_instance = instance.plan_days
-        print(nested_instance)
-        nested_data = validated_data.pop("plan_days")
-        print(nested_data)
-        # nested_serializer.update(nested_instance, nested_data)
+        print("validators", self.get_validators())
 
-        # print(plan_days)
-        # print(validated_data["plan_days"])
+        print("Update PlanSerializer Fired")
+        print("*" * 20)
+        print("ups: instance", instance)
+        print("ups: validated_data", validated_data)
+        print("*" * 20)
 
-        # Day.objects.filter()
+        instance.name = validated_data["name"]
+        instance.start_day = validated_data["start_day"]
 
-        return Plan.objects.filter(id=instance.pk).first()
+        if validated_data.get("plan_days"):
+            print("Got plan_days in validated data")
+            nested_serializer = self.fields["plan_days"]
+            nested_serializer.update(validated_data["plan_days"])
+
+        instance.save()
+
+        return instance
 
 
 # Ingredients Endpoint

@@ -1,8 +1,12 @@
+from typing import OrderedDict
 from rest_framework import status
 from rest_framework.test import APITestCase
 from core.models import User
-from shopping.models import Plan
+from shopping.models import Plan, Day
 from model_bakery import baker
+
+
+from pprint import pprint
 
 
 def endpoint(plan_id=None):
@@ -25,16 +29,6 @@ class TestAnonUser(APITestCase):
 
         data = {"name": "My Super Plan", "start_day": "Tues"}
         response = self.client.post(endpoint(), data, format="json")
-
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
-    def test_if_anonymous_user_getting_returns_401_unauthorized(self):
-        """
-        Ensure an anonymous user can not get any stores.
-        """
-        baker.make(Plan)
-
-        response = self.client.get(endpoint())
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -96,42 +90,46 @@ class TestAuthUser(APITestCase):
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
 
-    def test_get_data_returns_valid_200_ok(self):
+    def test_post_data_with_plan_days_blank_returns_valid_201_created(self):
+        """
+        Ensure valid data can be posted with a blank plan_days
+        """
 
-        plan = baker.make(Plan, user_id=1)
+        data = {"name": "My Awesome Plan", "start_day": "Tue", "plan_days": []}
+        url = endpoint()
 
-        url = endpoint(plan.id)
+        response = self.client.post(url, data, format="json")
 
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         assert response.data["id"] > 0
-        assert response.data["name"] == plan.name
-        assert response.data["start_day"] == plan.start_day
-
-    def test_patch_data_returns_valid_200_ok(self):
-
-        # Create a Section/Aisle so we can test:
-        plan = baker.make(Plan, user_id=1, name="Awesome Plan", start_day="Tues")
-
-        url = endpoint(plan.id)
-
-        data = {"name": "Test Plan 2", "start_day": "Wed"}
-
-        response = self.client.patch(url, data=data)
-
-        assert response.status_code == status.HTTP_200_OK
         assert response.data["name"] == data["name"]
         assert response.data["start_day"] == data["start_day"]
+        assert response.data["plan_days"] == data["plan_days"]
 
-    def test_delete_data_returns_204_no_content(self):
+    def test_post_data_with_plan_days_correct_returns_valid_201_created(self):
+        """
+        Ensure valid data can be posted with a correct plan_days
+        """
 
-        plan = baker.make(Plan, user_id=1, name="Awesome Plan", start_day="Tues")
+        # Arrange
+        meal_one = baker.make_recipe("shopping.meal_one")
+        meal_two = baker.make_recipe("shopping.meal_two")
+        meal_three = baker.make_recipe("shopping.meal_three")
 
-        url = endpoint(plan.id)
+        days = [
+            {"order": 1, "meal": meal_one.id},
+            {"order": 2, "meal": meal_two.id},
+            {"order": 3, "meal": meal_three.id},
+        ]
 
-        response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
+        data = {"name": "My Awesome Plan", "start_day": "Tue", "plan_days": days}
 
-        response = self.client.delete(url)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
+        url = endpoint()
+
+        response = self.client.post(url, data, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["id"] > 0
+        assert response.data["name"] == data["name"]
+        assert response.data["start_day"] == data["start_day"]
+        assert response.data["plan_days"] != []

@@ -1,0 +1,11 @@
+{
+  "name": "Test Plan 6668222222222",
+  "start_day": "Sat",
+  "plan_days": [
+    {
+      "id": 30,
+      "order": 3,
+      "meal": 2
+    }
+  ]
+}
