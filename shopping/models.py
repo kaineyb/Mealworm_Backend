@@ -1,6 +1,6 @@
-from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator
+from django.db import models
 
 # Create your models here.
 
@@ -44,6 +44,10 @@ class Store(models.Model):
 
 
 class Ingredient(models.Model):
+    """
+    Needs:  user & name
+    """
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
 
@@ -63,6 +67,10 @@ class Ingredient(models.Model):
 
 
 class MealIngredient(models.Model):
+    """
+    Needs:meal, ingredient, quantity and sunit
+    """
+
     added = models.DateTimeField(auto_now_add=True)
     measurements = [
         (" x ", "Items"),
@@ -89,6 +97,10 @@ class MealIngredient(models.Model):
 
 
 class Meal(models.Model):
+    """
+    Needs: user, name
+    """
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
 

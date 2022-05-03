@@ -1,0 +1,15 @@
+{
+  "name": "My New Meal",
+  "meal_ingredients": [
+    {
+      "ingredient": 1,
+      "quantity": 500,
+      "unit": "g"
+    },
+    {
+      "ingredient": 2,
+      "quantity": 500,
+      "unit": "g"
+    }
+  ]
+}

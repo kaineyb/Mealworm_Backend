@@ -1,12 +1,9 @@
 import pytest
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Plan, Day, Meal
-
 from setup import create_user
-
-from model_bakery import baker
+from shopping.models import Day, Meal, Plan
 
 
 def endpoint(meal_id=None):
@@ -71,3 +68,50 @@ class TestAuthUser(APITestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["name"] == data["name"]
+
+    def test_post_data_with_blank_meal_ingredients_returns_valid_201_created(self):
+        """
+        Ensure valid data can be posted with a blank meal_ingredients
+        """
+
+        data = {"name": "My Lovely Meal", "meal_ingredients": []}
+
+        url = endpoint()
+
+        response = self.client.post(url, data, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["name"] == data["name"]
+
+    def test_post_data_with_new_meal_ingredients_returns_valid_201_created(self):
+
+        """
+        Ensure we can create meal ingredients when we create a meal.
+        We do first need the ingredient :)
+        """
+
+        ingredient_one = baker.make_recipe("shopping.ingredient_one")
+        ingredient_two = baker.make_recipe("shopping.ingredient_two")
+        ingredient_three = baker.make_recipe("shopping.ingredient_three")
+
+        data = {
+            "name": "My New Meal",
+            "meal_ingredients": [
+                {"ingredient": ingredient_one.id, "quantity": 125, "unit": "ml"},
+                {"ingredient": ingredient_two.id, "quantity": 250, "unit": "l"},
+                {"ingredient": ingredient_three.id, "quantity": 500, "unit": "g"},
+            ],
+        }
+
+        url = endpoint()
+
+        response = self.client.post(url, data, format="json")
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["name"] == data["name"]
+
+        assert response.data["meal_ingredients"] != []
+
+        assert response.data["meal_ingredients"][0]["id"] > 0
+        assert response.data["meal_ingredients"][1]["id"] > 0
+        assert response.data["meal_ingredients"][2]["id"] > 0

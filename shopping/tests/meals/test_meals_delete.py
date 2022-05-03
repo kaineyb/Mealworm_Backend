@@ -1,13 +1,10 @@
 import pytest
+from core.models import User
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Plan, Day, Meal
-from core.models import User
-
 from setup import create_user
-
-from model_bakery import baker
+from shopping.models import Day, Ingredient, Meal, MealIngredient, Plan
 
 
 def endpoint(meal_id=None):
@@ -53,3 +50,20 @@ class TestAuthUser(APITestCase):
 
         response = self.client.delete(url)
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_delete_meal_deletes_meal_ingredient(self):
+
+        meal = baker.make(Meal, user_id=self.user_id)
+        ingredient = baker.make(Ingredient, user_id=self.user_id, name="My Ingredient")
+        meal_ingredient = baker.make(MealIngredient, meal=meal, ingredient=ingredient)
+
+        url = endpoint(meal.id)
+
+        result = MealIngredient.objects.filter(pk=meal_ingredient.pk).first()
+        assert result
+
+        response = self.client.delete(url)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+        result = MealIngredient.objects.filter(pk=meal_ingredient.pk).first()
+        assert result == None

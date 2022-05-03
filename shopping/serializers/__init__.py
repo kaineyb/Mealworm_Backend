@@ -19,11 +19,6 @@ from .fields import (
     SectionsOfUserPrimaryKeyRelatedField,
     StoresOfUserPrimaryKeyRelatedField,
 )
-from .simple import (
-    SimpleDaySerializer,
-    SimpleIngredientSerializer,
-    SimpleMealSerializer,
-)
 
 # Store Endpoint
 
@@ -369,15 +364,33 @@ class MealSerializer(serializers.ModelSerializer):
 
 
 class CreateMealSerializer(serializers.ModelSerializer):
+
+    meal_ingredients = MealIngredientSerializer(many=True, required=False)
+
     class Meta:
         model = Meal
-        fields = ["id", "name"]
+        fields = ["id", "name", "meal_ingredients"]
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
+
+            key = "meal_ingredients"
+
+            meal_ingredients = (
+                self.validated_data.pop(key) if self.validated_data.get(key) else False
+            )
+
+            if self.validated_data.get(key) == []:
+                del self.validated_data[key]
+
             user_id = self.context["user_id"]
-            meal = Meal.objects.create(user_id=user_id, **self.validated_data)
-            return meal
+            new_meal: Meal = Meal.objects.create(user_id=user_id, **self.validated_data)
+
+            if meal_ingredients:
+                for instance in meal_ingredients:
+                    new_meal.meal_ingredients.create(**instance)
+
+            return new_meal
 
 
 class UpdateMealSerializer(serializers.ModelSerializer):
