@@ -6,6 +6,10 @@ from django.db import models
 
 
 class Section(models.Model):
+    """
+    Needs: user, name
+    """
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
 
@@ -31,6 +35,10 @@ class StoreAisle(models.Model):
 
 
 class Store(models.Model):
+    """
+    Needs: user, name
+    """
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
 
@@ -114,6 +122,8 @@ class Meal(models.Model):
 
 
 class Plan(models.Model):
+    """Needs: user, name"""
+
     days = [
         ("Mon", "Monday"),
         ("Tue", "Tuesday"),
