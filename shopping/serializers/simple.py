@@ -5,9 +5,7 @@ from ..models import Day, Ingredient, Meal, Store
 class SimpleIngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = [
-            "name",
-        ]
+        fields = ["name", "id"]
 
 
 class SimpleMealSerializer(serializers.ModelSerializer):

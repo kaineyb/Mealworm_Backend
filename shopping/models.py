@@ -6,9 +6,10 @@ from django.core.validators import MinValueValidator
 
 
 class Section(models.Model):
-    name = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
+
+    name = models.CharField(max_length=255)
 
     def __str__(self) -> str:
         return self.name
@@ -30,9 +31,10 @@ class StoreAisle(models.Model):
 
 
 class Store(models.Model):
-    name = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
+
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -42,12 +44,13 @@ class Store(models.Model):
 
 
 class Ingredient(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    added = models.DateTimeField(auto_now_add=True)
+
     name = models.CharField(max_length=255)
     section = models.ForeignKey(
         Section, on_delete=models.SET_NULL, blank=True, null=True
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
@@ -60,6 +63,7 @@ class Ingredient(models.Model):
 
 
 class MealIngredient(models.Model):
+    added = models.DateTimeField(auto_now_add=True)
     measurements = [
         (" x ", "Items"),
         ("g", "Grams"),
@@ -67,15 +71,15 @@ class MealIngredient(models.Model):
         ("ml", "Millilitres"),
         ("l", "Litres"),
     ]
+    quantity = models.IntegerField(validators=[MinValueValidator(1)])
+    unit = models.CharField(max_length=255, choices=measurements)
+
     ingredient = models.ForeignKey(
         Ingredient, on_delete=models.PROTECT, related_name="actual_ingredient"
     )
-    quantity = models.IntegerField(validators=[MinValueValidator(1)])
-    unit = models.CharField(max_length=255, choices=measurements)
     meal = models.ForeignKey(
         "Meal", blank=True, on_delete=models.CASCADE, related_name="meal_ingredients"
     )
-    added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.quantity} {self.unit} {self.ingredient} "
@@ -85,9 +89,10 @@ class MealIngredient(models.Model):
 
 
 class Meal(models.Model):
-    name = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     added = models.DateTimeField(auto_now_add=True)
+
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -106,13 +111,13 @@ class Plan(models.Model):
         ("Sat", "Saturday"),
         ("Sun", "Sunday"),
     ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    added = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
 
     name = models.CharField(max_length=255)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     start_day = models.CharField(max_length=255, choices=days)
-    added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.name}"

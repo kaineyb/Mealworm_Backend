@@ -111,7 +111,7 @@ class TestAuthUser(APITestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["id"] > 0
-        assert response.data["ingredient"]["name"] == self.ingredient.name
+        assert response.data["ingredient"] == self.ingredient.id
 
         assert response.data["quantity"] == meal_ingredient.quantity
         assert response.data["unit"] == meal_ingredient.unit

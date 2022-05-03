@@ -1,28 +1,29 @@
 from collections import OrderedDict
-from rest_framework import serializers
+
 from django.db import transaction
+from rest_framework import serializers
+
 from ..models import (
     Day,
     Ingredient,
     Meal,
-    Store,
-    Section,
-    Plan,
     MealIngredient,
+    Plan,
+    Section,
+    Store,
     StoreAisle,
 )
+from .fields import (
+    IngredientsOfUserPrimaryKeyRelatedField,
+    MealsOfUserPrimaryKeyRelatedField,
+    SectionsOfUserPrimaryKeyRelatedField,
+    StoresOfUserPrimaryKeyRelatedField,
+)
 from .simple import (
+    SimpleDaySerializer,
     SimpleIngredientSerializer,
     SimpleMealSerializer,
-    SimpleDaySerializer,
 )
-from .fields import (
-    StoresOfUserPrimaryKeyRelatedField,
-    MealsOfUserPrimaryKeyRelatedField,
-    IngredientsOfUserPrimaryKeyRelatedField,
-    SectionsOfUserPrimaryKeyRelatedField,
-)
-
 
 # Store Endpoint
 
@@ -147,23 +148,7 @@ class CreateDaySerializer(serializers.ModelSerializer):
 
 
 class DayListSerializer(serializers.ListSerializer):
-    def validate(self, data):
-        """
-        Check that the start is before the stop.
-        """
-        print("*" * 20)
-        print("DayListSerializer validate() called with:", data)
-        print("*" * 20)
-
-        return data
-
-    def create(self, request, *args, **kwargs):
-        print("*" * 20)
-        print("DayListSerializer create() fired")
-        print("nothing happened")
-        print("*" * 20)
-
-    def update(self, validated_data):
+    def update(self, validated_data, plan_instance):
 
         print("*" * 20)
         print("DayListSerializer update()  fired")
@@ -188,27 +173,19 @@ class DayListSerializer(serializers.ListSerializer):
                 "meal": meal,
             }
 
-            # First check that this meal is for that user, and if it isn't we don't do anything.
-
             if not meal_object.user_id == self.context["user_id"]:
                 continue
 
-            # We check if this is an existing day or not.
-
             if id and day_object:
-                # Update Day
-
                 list_of_instances.append(self.child.update(day_object, data))
-                print(
-                    "Updating:",
-                    updated_day,
-                    "with data",
-                    {"order": order, "meal": meal},
-                )
+
             else:
-                # New Day, create one with data
-                print("day has not id, creating day")
+                data["plan"] = plan_instance
                 list_of_instances.append(self.child.create(data))
+
+        Day.objects.filter(plan_id=plan_instance.id).exclude(
+            pk__in=[i.pk for i in list_of_instances]
+        ).delete()
 
         return list_of_instances
 
@@ -268,16 +245,15 @@ class UpdatePlanSerializer(serializers.ModelSerializer):
 
     def update(self, instance: Plan, validated_data: dict):
 
-        print("initial_data", self.initial_data)
-        # print("initial_data day_set", self.initial_data["day_set"])
-
-        print("validators", self.get_validators())
-
-        print("Update PlanSerializer Fired")
-        print("*" * 20)
-        print("ups: instance", instance)
-        print("ups: validated_data", validated_data)
-        print("*" * 20)
+        # print("*" * 20)
+        # print("Update PlanSerializer Fired")
+        # print("*" * 20)
+        # print("initial_data", self.initial_data)
+        # print("validators", self.get_validators())
+        # print("instance", instance)
+        # print("validated_data", validated_data)
+        # print("Update PlanSerializer end")
+        # print("*" * 20)
 
         instance.name = validated_data["name"]
         instance.start_day = validated_data["start_day"]
@@ -285,7 +261,7 @@ class UpdatePlanSerializer(serializers.ModelSerializer):
         if validated_data.get("day_set"):
             print("Got day_set in validated data")
             nested_serializer = self.fields["day_set"]
-            nested_serializer.update(validated_data["day_set"])
+            nested_serializer.update(validated_data["day_set"], plan_instance=instance)
 
         instance.save()
 
@@ -329,7 +305,7 @@ class UpdateIngredientSerializer(serializers.ModelSerializer):
 
 class MealIngredientSerializer(serializers.ModelSerializer):
 
-    ingredient = SimpleIngredientSerializer()
+    # ingredient = SimpleIngredientSerializer()
 
     class Meta:
         model = MealIngredient

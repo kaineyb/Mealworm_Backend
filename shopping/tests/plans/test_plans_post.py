@@ -2,11 +2,8 @@ from typing import OrderedDict
 from rest_framework import status
 from rest_framework.test import APITestCase
 from core.models import User
-from shopping.models import Plan, Day
+from shopping.models import Plan
 from model_bakery import baker
-
-
-from pprint import pprint
 
 
 def endpoint(plan_id=None):
@@ -71,8 +68,13 @@ class TestAuthUser(APITestCase):
         response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
+
         assert (
             response.data["name"] is not None
+        )  # Checks that we get an validation error.
+
+        assert (
+            response.data["start_day"] is not None
         )  # Checks that we get an validation error.
 
     def test_post_data_returns_valid_201_created(self):

@@ -30,15 +30,6 @@ class TestAnonUser(APITestCase):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_if_anonymous_user_getting_returns_401_unauthorised(self):
-        """
-        Ensure an anonymous user can not get any Plan Days.
-        """
-
-        response = self.client.get(endpoint())
-
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
-
 
 class TestAuthUser(APITestCase):
 
@@ -80,40 +71,3 @@ class TestAuthUser(APITestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["name"] == data["name"]
-
-    def test_get_data_returns_valid_200_ok(self):
-
-        meal = baker.make(Meal, user_id=self.user_id)
-
-        url = endpoint(meal.id)
-
-        response = self.client.get(url)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data["id"] > 0
-        assert response.data["name"] == meal.name
-
-    def test_patch_data_returns_valid_200_ok(self):
-
-        meal = baker.make(Meal, user_id=self.user_id)
-
-        url = endpoint(meal.id)
-
-        data = {"name": "My New Meal Name"}
-
-        response = self.client.patch(url, data=data)
-
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data["name"] == data["name"]
-
-    def test_delete_data_returns_204_no_content(self):
-
-        meal = baker.make(Meal, user_id=self.user_id)
-
-        url = endpoint(meal.id)
-
-        response = self.client.get(url)
-        assert response.status_code == status.HTTP_200_OK
-
-        response = self.client.delete(url)
-        assert response.status_code == status.HTTP_204_NO_CONTENT

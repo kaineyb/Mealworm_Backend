@@ -116,3 +116,35 @@ class TestAuthUser(APITestCase):
                 ]
             ),
         ]
+
+    def test_get_day_set_has_both_day_and_meal_id(self):
+        """
+        Checks that we have both a Plan ID and a Day ID
+        """
+
+        # Arrange
+
+        plan = baker.make_recipe("shopping.plan_one")
+        meal = baker.make_recipe("shopping.meal_one")
+        day = baker.make(Day, plan_id=plan.id, meal_id=meal.id, order=1)
+
+        url = endpoint(plan.id)
+
+        # We want to see a dictionary like the below:
+        # {"id": 1, "order": 1, "meal":  meal.id}
+        day_set = OrderedDict()
+        day_set["id"] = day.id
+        day_set["order"] = day.order
+        day_set["meal"] = meal.id
+
+        # Act
+        response = self.client.get(url)
+
+        # Assert
+
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.data["id"] == plan.id
+        assert response.data["name"] == plan.name
+        assert response.data["start_day"] == plan.start_day
+        assert response.data["day_set"] == [day_set]

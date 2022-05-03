@@ -1,12 +1,13 @@
 from rest_framework.viewsets import ModelViewSet
+
 from .models import (
-    Ingredient,
-    MealIngredient,
-    Store,
-    Section,
-    Plan,
     Day,
+    Ingredient,
     Meal,
+    MealIngredient,
+    Plan,
+    Section,
+    Store,
     StoreAisle,
 )
 from .serializers import (
@@ -61,7 +62,7 @@ class SectionViewSet(ModelViewSet):
     """
 
     serializer_class = SectionSerializer
-    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+    http_method_names = ["get", "post", "patch", "put", "delete", "head", "options"]
 
     def get_queryset(self):
         """

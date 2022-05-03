@@ -1,13 +1,11 @@
+from pprint import pprint
+
 import pytest
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Ingredient, MealIngredient, Plan, Day, Meal
-
 from setup import create_user
-
-from model_bakery import baker
-from pprint import pprint
+from shopping.models import Day, Ingredient, Meal, MealIngredient, Plan
 
 
 def endpoint(meal_id=None):
