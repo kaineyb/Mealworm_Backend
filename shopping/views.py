@@ -1,5 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 
+from shopping.serializers.meal import MealSerializer
+
 from . import models, serializers
 
 # Create your views here.
@@ -156,6 +158,7 @@ class MealViewSet(ModelViewSet):
     """
 
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
+    serializer_class = MealSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -164,12 +167,12 @@ class MealViewSet(ModelViewSet):
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
 
-    def get_serializer_class(self):
-        if self.request.method == "POST":
-            return serializers.CreateMealSerializer
-        elif self.request.method == "PATCH":
-            return serializers.UpdateMealSerializer
-        return serializers.MealSerializer
+    # def get_serializer_class(self):
+    #     if self.request.method == "POST":
+    #         return serializers.CreateMealSerializer
+    #     elif self.request.method == "PATCH":
+    #         return serializers.UpdateMealSerializer
+    #     return serializers.MealSerializer
 
 
 class MealIngredientViewSet(ModelViewSet):

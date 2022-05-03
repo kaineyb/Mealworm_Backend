@@ -60,7 +60,7 @@ class Ingredient(models.Model):
         return self.name
 
     def __repr__(self):
-        return f"Ingredient(id={self.id}, name={self.name}, section={self.section})"
+        return f"Ingredient(id={self.id}, name='{self.name}', section={self.section})"
 
     class Meta:
         ordering = ["section", "name"]
@@ -68,7 +68,7 @@ class Ingredient(models.Model):
 
 class MealIngredient(models.Model):
     """
-    Needs:meal, ingredient, quantity and sunit
+    Needs: meal, ingredient, quantity and unit
     """
 
     added = models.DateTimeField(auto_now_add=True)

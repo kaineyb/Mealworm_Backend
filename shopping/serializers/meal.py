@@ -1,21 +1,13 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models import Day, Meal
+from ..models import Meal
 from .meal_ingredients import MealIngredientSerializer
 
 # Meals Endpoint
 
 
 class MealSerializer(serializers.ModelSerializer):
-    meal_ingredients = MealIngredientSerializer(many=True)
-
-    class Meta:
-        model = Meal
-        fields = ["id", "name", "meal_ingredients"]
-
-
-class CreateMealSerializer(serializers.ModelSerializer):
 
     meal_ingredients = MealIngredientSerializer(many=True, required=False)
 
@@ -44,18 +36,20 @@ class CreateMealSerializer(serializers.ModelSerializer):
 
             return new_meal
 
+    def update(self, instance: Meal, validated_data: dict):
 
-class UpdateMealSerializer(serializers.ModelSerializer):
+        nested_data_key = "meal_ingredients"
 
-    meal_ingredients = MealIngredientSerializer(many=True, required=False)
+        nested_data = validated_data.get(nested_data_key)
 
-    class Meta:
-        model = Meal
-        fields = ["name", "meal_ingredients"]
+        if nested_data:
+            print("Got meal_ingredients in validated data")
+            nested_serializer = self.fields[nested_data_key]
+            nested_serializer.update(instance, validated_data[nested_data_key])
 
-    def update(self, instance: Day, validated_data):
+        if nested_data or nested_data == []:
+            del validated_data[nested_data_key]
 
-        name = self.validated_data["name"]
-        print("validated_data", validated_data)
-        Meal.objects.filter(id=instance.pk).update(name=name)
-        return Meal.objects.filter(id=instance.pk).first()
+        Meal.objects.filter(pk=instance.pk).update(**validated_data)
+
+        return Meal.objects.filter(pk=instance.pk).first()

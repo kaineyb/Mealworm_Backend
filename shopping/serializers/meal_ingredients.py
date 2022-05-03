@@ -1,16 +1,43 @@
+from audioop import mul
+from typing import OrderedDict
+
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models import Day, MealIngredient
+from ..models import Meal, MealIngredient
 from .fields import IngredientsOfUserPrimaryKeyRelatedField
 
 # Meal Ingredients End Point
 
 
+class MealIngredientListSerializer(serializers.ListSerializer):
+    def update(self, instance: Meal, list_of_validated_data: list):
+        print("MealIngredientListSerializer: I've been called!")
+
+        print("MealIngredientListSerializer: validated_data", list_of_validated_data)
+
+        validated_data: OrderedDict
+        self.child: MealIngredientSerializer
+        list_of_instances = []
+
+        for validated_data in list_of_validated_data:
+
+            id = validated_data.get("id")
+            mi_instance: MealIngredient = MealIngredient.objects.filter(pk=id).first()
+
+            if id and mi_instance:
+                list_of_instances.append(self.child.update(mi_instance, validated_data))
+
+            else:
+                validated_data["meal_id"] = instance.pk
+
+                print("mi_update_data with meal_id", validated_data)
+                list_of_instances.append(self.child.create(validated_data))
+
+        return list_of_instances
+
+
 class MealIngredientSerializer(serializers.ModelSerializer):
-
-    # ingredient = SimpleIngredientSerializer()
-
     class Meta:
         model = MealIngredient
         fields = [
@@ -19,6 +46,7 @@ class MealIngredientSerializer(serializers.ModelSerializer):
             "quantity",
             "unit",
         ]
+        list_serializer_class = MealIngredientListSerializer
 
 
 class CreateMealIngredientSerializer(serializers.ModelSerializer):
@@ -49,10 +77,10 @@ class UpdateMealIngredientSerializer(serializers.ModelSerializer):
         model = MealIngredient
         fields = ["quantity", "unit"]
 
-    def update(self, instance: Day, validated_data):
+    def update(self, instance, validated_data):
 
-        quantity = self.validated_data["quantity"]
-        unit = self.validated_data["unit"]
+        quantity = validated_data["quantity"]
+        unit = validated_data["unit"]
 
         MealIngredient.objects.filter(id=instance.pk).update(
             quantity=quantity, unit=unit
