@@ -1,9 +1,11 @@
 from typing import OrderedDict
+
+from core.models import User
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-from core.models import User
-from shopping.models import Plan, Day
-from model_bakery import baker
+from setup import create_user
+from shopping.models import Day, Plan
 
 
 def endpoint(plan_id=None):
@@ -38,24 +40,9 @@ class TestAuthUser(APITestCase):
         """
         Create a User and Authenticate for Testing
         """
-        url = "/auth/users/"
+        create_user(self, self.user)
 
-        data = {
-            "email": "test@test.com",
-            "username": "TestUser",
-            "password": "TestPassword",
-        }
-
-        self.client.post(url, data, format="json")
-
-        self.user["id"] = User.objects.get().id
-        self.user["email"] = User.objects.get().email
-        self.user["username"] = User.objects.get().username
-
-        print(f"SetUp User ID is: {self.user['id']}")
-
-        user = User.objects.get(pk=self.user["id"])
-        self.client.force_authenticate(user=user)
+        self.user_id = self.user["id"]
 
     def test_get_data_returns_valid_200_ok(self):
 

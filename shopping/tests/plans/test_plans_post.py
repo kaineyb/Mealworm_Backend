@@ -1,9 +1,11 @@
 from typing import OrderedDict
+
+from core.models import User
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-from core.models import User
+from setup import create_user
 from shopping.models import Plan
-from model_bakery import baker
 
 
 def endpoint(plan_id=None):
@@ -31,31 +33,13 @@ class TestAnonUser(APITestCase):
 
 
 class TestAuthUser(APITestCase):
-
-    user = {}
-
     def setUp(self):
         """
         Create a User and Authenticate for Testing
         """
-        url = "/auth/users/"
+        create_user(self, self.user)
 
-        data = {
-            "email": "test@test.com",
-            "username": "TestUser",
-            "password": "TestPassword",
-        }
-
-        self.client.post(url, data, format="json")
-
-        self.user["id"] = User.objects.get().id
-        self.user["email"] = User.objects.get().email
-        self.user["username"] = User.objects.get().username
-
-        print(f"SetUp User ID is: {self.user['id']}")
-
-        user = User.objects.get(pk=self.user["id"])
-        self.client.force_authenticate(user=user)
+        self.user_id = self.user["id"]
 
     def test_post_data_returns_invalid_400_bad_request(self):
         """
