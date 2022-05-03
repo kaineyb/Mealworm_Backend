@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from ..models import Day, Ingredient, Meal, Store
+
+from ..models import Day, Ingredient, Meal
 
 
 class SimpleIngredientSerializer(serializers.ModelSerializer):

@@ -93,7 +93,7 @@ class MealIngredient(models.Model):
         return f"{self.quantity} {self.unit} {self.ingredient} "
 
     def __repr__(self):
-        return f"{self.quantity}{self.unit} {self.ingredient}"
+        return f"MealIngredient(quantity={self.quantity} unit={self.unit} ingredient={self.ingredient})"
 
 
 class Meal(models.Model):

@@ -1,36 +1,6 @@
 from rest_framework.viewsets import ModelViewSet
 
-from .models import (
-    Day,
-    Ingredient,
-    Meal,
-    MealIngredient,
-    Plan,
-    Section,
-    Store,
-    StoreAisle,
-)
-from .serializers import (
-    CreateDaySerializer,
-    CreateMealIngredientSerializer,
-    CreateMealSerializer,
-    DaySerializer,
-    IngredientSerializer,
-    MealIngredientSerializer,
-    MealSerializer,
-    PlanSerializer,
-    SectionSerializer,
-    StoreAisleSerializer,
-    StoreSerializer,
-    UpdateDaySerializer,
-    UpdateIngredientSerializer,
-    UpdateMealIngredientSerializer,
-    UpdateMealSerializer,
-    UpdatePlanSerializer,
-    UpdateSectionSerializer,
-    UpdateStoreAisleSerializer,
-    UpdateStoreSerializer,
-)
+from . import models, serializers
 
 # Create your views here.
 
@@ -40,20 +10,20 @@ class StoreViewSet(ModelViewSet):
     Using StoreViewSet() which only uses StoreSerializer
     """
 
-    serializer_class = StoreSerializer
+    serializer_class = serializers.StoreSerializer
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
     def get_queryset(self):
         user = self.request.user
-        return Store.objects.filter(user_id=user.id)
+        return models.Store.objects.filter(user_id=user.id)
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":
-            return UpdateStoreSerializer
-        return StoreSerializer
+            return serializers.UpdateStoreSerializer
+        return serializers.StoreSerializer
 
 
 class SectionViewSet(ModelViewSet):
@@ -61,7 +31,7 @@ class SectionViewSet(ModelViewSet):
     Using SectionViewSet() which only uses SectionSerializer
     """
 
-    serializer_class = SectionSerializer
+    serializer_class = serializers.SectionSerializer
     http_method_names = ["get", "post", "patch", "put", "delete", "head", "options"]
 
     def get_queryset(self):
@@ -69,15 +39,15 @@ class SectionViewSet(ModelViewSet):
         Only show sections that were created by that user
         """
         user = self.request.user
-        return Section.objects.filter(user_id=user.id)
+        return models.Section.objects.filter(user_id=user.id)
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":
-            return UpdateSectionSerializer
-        return SectionSerializer
+            return serializers.UpdateSectionSerializer
+        return serializers.SectionSerializer
 
 
 class StoreAisleViewSet(ModelViewSet):
@@ -89,8 +59,8 @@ class StoreAisleViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":
-            return UpdateStoreAisleSerializer
-        return StoreAisleSerializer
+            return serializers.UpdateStoreAisleSerializer
+        return serializers.StoreAisleSerializer
 
     def get_serializer_context(self):
 
@@ -104,7 +74,7 @@ class StoreAisleViewSet(ModelViewSet):
         Only show Days that were created by that user
         """
 
-        return StoreAisle.objects.filter(section_id=self.kwargs["section_pk"])
+        return models.StoreAisle.objects.filter(section_id=self.kwargs["section_pk"])
 
 
 class PlanViewSet(ModelViewSet):
@@ -116,8 +86,8 @@ class PlanViewSet(ModelViewSet):
 
     def get_serializer_class(self):
         if self.request.method == "PUT":
-            return UpdatePlanSerializer
-        return PlanSerializer
+            return serializers.UpdatePlanSerializer
+        return serializers.PlanSerializer
 
     def get_queryset(self):
         """
@@ -125,7 +95,7 @@ class PlanViewSet(ModelViewSet):
         """
 
         user = self.request.user
-        return Plan.objects.filter(user_id=user.id)
+        return models.Plan.objects.filter(user_id=user.id)
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
@@ -136,7 +106,7 @@ class DayViewSet(ModelViewSet):
     Using DayViewSet() which uses DaySerializer and UpdateDaySerializer only for Patch Requests
     """
 
-    serializer_class = DaySerializer
+    serializer_class = serializers.DaySerializer
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
     def get_serializer_context(self):
@@ -147,16 +117,16 @@ class DayViewSet(ModelViewSet):
         Only show Days that were created by that user
         """
 
-        return Day.objects.filter(plan_id=self.kwargs["plans_pk"]).select_related(
-            "meal"
-        )
+        return models.Day.objects.filter(
+            plan_id=self.kwargs["plans_pk"]
+        ).select_related("meal")
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":
-            return UpdateDaySerializer
+            return serializers.UpdateDaySerializer
         elif self.request.method == "POST":
-            return CreateDaySerializer
-        return DaySerializer
+            return serializers.CreateDaySerializer
+        return serializers.DaySerializer
 
 
 class IngredientViewSet(ModelViewSet):
@@ -164,20 +134,20 @@ class IngredientViewSet(ModelViewSet):
     Using IngredientViewSet() which uses IngredientSerializer
     """
 
-    serializer_class = IngredientSerializer
+    serializer_class = serializers.IngredientSerializer
     http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
     def get_queryset(self):
         user = self.request.user
-        return Ingredient.objects.filter(user_id=user.id)
+        return models.Ingredient.objects.filter(user_id=user.id)
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
 
     def get_serializer_class(self):
         if self.request.method == "PATCH":
-            return UpdateIngredientSerializer
-        return IngredientSerializer
+            return serializers.UpdateIngredientSerializer
+        return serializers.IngredientSerializer
 
 
 class MealViewSet(ModelViewSet):
@@ -189,17 +159,17 @@ class MealViewSet(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Meal.objects.filter(user_id=user.id)
+        return models.Meal.objects.filter(user_id=user.id)
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-            return CreateMealSerializer
+            return serializers.CreateMealSerializer
         elif self.request.method == "PATCH":
-            return UpdateMealSerializer
-        return MealSerializer
+            return serializers.UpdateMealSerializer
+        return serializers.MealSerializer
 
 
 class MealIngredientViewSet(ModelViewSet):
@@ -213,11 +183,11 @@ class MealIngredientViewSet(ModelViewSet):
         return {"user_id": self.request.user.id, "meals_pk": self.kwargs["meals_pk"]}
 
     def get_queryset(self):
-        return MealIngredient.objects.filter(meal_id=self.kwargs["meals_pk"])
+        return models.MealIngredient.objects.filter(meal_id=self.kwargs["meals_pk"])
 
     def get_serializer_class(self):
         if self.request.method == "POST":
-            return CreateMealIngredientSerializer
+            return serializers.CreateMealIngredientSerializer
         elif self.request.method == "PATCH":
-            return UpdateMealIngredientSerializer
-        return MealIngredientSerializer
+            return serializers.UpdateMealIngredientSerializer
+        return serializers.MealIngredientSerializer
