@@ -33,6 +33,9 @@ class TestAnonUser(APITestCase):
 
 
 class TestAuthUser(APITestCase):
+
+    user = {}
+
     def setUp(self):
         """
         Create a User and Authenticate for Testing
