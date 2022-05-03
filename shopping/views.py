@@ -126,7 +126,7 @@ class PlanViewSet(ModelViewSet):
         """
 
         user = self.request.user
-        return models.Plan.objects.filter(user_id=user.id)
+        return models.Plan.objects.filter(user_id=user.id).prefetch_related("day_set")
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
@@ -191,7 +191,9 @@ class MealViewSet(ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return models.Meal.objects.filter(user_id=user.id)
+        return models.Meal.objects.filter(user_id=user.id).prefetch_related(
+            "meal_ingredients"
+        )
 
     def get_serializer_context(self):
         return {"user_id": self.request.user.id}
