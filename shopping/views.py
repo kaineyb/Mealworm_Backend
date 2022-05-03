@@ -1,10 +1,39 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
+from shopping.serializers import ingredients
 from shopping.serializers.meal import MealSerializer
 
 from . import models, serializers
 
 # Create your views here.
+
+
+@api_view()
+def get_all(request):
+    user = request.user
+
+    stores = models.Store.objects.filter(user_id=user.id)
+    sections = models.Section.objects.filter(user_id=user.id)
+
+    plans = models.Plan.objects.filter(user_id=user.id).prefetch_related("day_set")
+    ingredients = models.Ingredient.objects.filter(user_id=user.id)
+    meals = models.Meal.objects.filter(user_id=user.id).prefetch_related(
+        "meal_ingredients"
+    )
+
+    data = {
+        "stores": stores,
+        "sections": sections,
+        "plans": plans,
+        "ingredients": ingredients,
+        "meals": meals,
+    }
+
+    serializer = serializers.GetAllSerializer(data)
+
+    return Response(serializer.data)
 
 
 class StoreViewSet(ModelViewSet):

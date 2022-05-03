@@ -6,11 +6,11 @@ name = "pypi"
 [packages]
 django = "*"
 django-debug-toolbar = "*"
-djangorestframework = "*"
+django-cors-headers = "*"
 djoser = "*"
+djangorestframework = "*"
 drf-nested-routers = "*"
 model-bakery = "*"
-django-cors-headers = "*"
 
 [dev-packages]
 black = "*"
