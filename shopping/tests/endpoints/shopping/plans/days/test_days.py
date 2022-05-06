@@ -1,13 +1,11 @@
+import json
+
 import pytest
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Plan, Day, Meal
-
 from setup import create_user
-
-from model_bakery import baker
-import json
+from shopping.models import Day, Meal, Plan
 
 
 def endpoint(plan_id=1, days_id=None):
@@ -85,6 +83,7 @@ class TestAuthUser(APITestCase):
         response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
+        assert response.data["id"] > 0
         assert response.data["order"] == data["order"]
         assert response.data["meal"] == data["order"]
 

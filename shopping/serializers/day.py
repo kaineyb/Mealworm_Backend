@@ -42,7 +42,7 @@ class CreateDaySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Day
-        fields = ["order", "meal"]
+        fields = ["id", "order", "meal"]
 
     def validate_meal(self, value):
         """
