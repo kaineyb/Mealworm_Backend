@@ -71,19 +71,15 @@ class CreateMealIngredientSerializer(serializers.ModelSerializer):
 class UpdateMealIngredientSerializer(serializers.ModelSerializer):
     """"""
 
+    ingredient = IngredientsOfUserPrimaryKeyRelatedField()
     quantity = serializers.IntegerField()
 
     class Meta:
         model = MealIngredient
-        fields = ["quantity", "unit"]
+        fields = ["ingredient", "quantity", "unit"]
 
     def update(self, instance, validated_data):
 
-        quantity = validated_data["quantity"]
-        unit = validated_data["unit"]
-
-        MealIngredient.objects.filter(id=instance.pk).update(
-            quantity=quantity, unit=unit
-        )
+        MealIngredient.objects.filter(id=instance.pk).update(**validated_data)
 
         return MealIngredient.objects.filter(id=instance.pk).first()

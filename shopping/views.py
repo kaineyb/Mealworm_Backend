@@ -113,7 +113,7 @@ class PlanViewSet(ModelViewSet):
     Using PlanViewSet() which only uses PlanSerializer
     """
 
-    http_method_names = ["get", "post", "put", "delete", "head", "options"]
+    http_method_names = ["get", "post", "put", "patch", "delete", "head", "options"]
 
     def get_serializer_class(self):
         if self.request.method == "PUT":

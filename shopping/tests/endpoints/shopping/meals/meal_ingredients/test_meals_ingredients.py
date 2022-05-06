@@ -1,13 +1,10 @@
 import pytest
+from core.models import User
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Ingredient, MealIngredient, Plan, Day, Meal
-from core.models import User
-
 from setup import create_user
-
-from model_bakery import baker
+from shopping.models import Day, Ingredient, Meal, MealIngredient, Plan
 
 
 def endpoint(meal_id=1, meal_ingredient_id=None) -> str:
@@ -59,6 +56,8 @@ class TestAuthUser(APITestCase):
         self.user_id = self.user["id"]
 
         self.ingredient = baker.make(Ingredient, user_id=self.user_id)
+        self.ingredient_two = baker.make(Ingredient, user_id=self.user_id)
+
         self.meal = baker.make(Meal, user_id=self.user_id)
 
     def test_post_data_returns_invalid_400_bad_request(self):
@@ -117,6 +116,23 @@ class TestAuthUser(APITestCase):
         assert response.data["unit"] == meal_ingredient.unit
 
     def test_patch_data_returns_valid_200_ok(self):
+
+        meal_ingredient = baker.make(
+            MealIngredient, meal_id=self.meal.id, ingredient_id=self.ingredient.id
+        )
+
+        url = endpoint(self.meal.id, meal_ingredient.id)
+
+        data = {"quantity": 1000, "unit": "ml", "ingredient": self.ingredient_two.id}
+
+        response = self.client.patch(url, data=data)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data["quantity"] == data["quantity"]
+        assert response.data["unit"] == data["unit"]
+        assert response.data["ingredient"] == data["ingredient"]
+
+    def test_patch_we_can_change_data_returns_valid_200_ok(self):
 
         meal_ingredient = baker.make(
             MealIngredient, meal_id=self.meal.id, ingredient_id=self.ingredient.id
