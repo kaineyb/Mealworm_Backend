@@ -11,6 +11,8 @@ djoser = "*"
 djangorestframework = "*"
 drf-nested-routers = "*"
 model-bakery = "*"
+whitenoise = "*"
+gunicorn = "*"
 
 [dev-packages]
 black = "*"
