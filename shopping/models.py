@@ -27,6 +27,12 @@ class StoreAisle(models.Model):
     section = models.ForeignKey("Section", on_delete=models.CASCADE)
     aisle_number = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
 
+    class Meta:
+        unique_together = (
+            "store",
+            "section",
+        )
+
     def __str__(self):
         return f"In {self.store} {self.section} is on Aisle {self.aisle_number}"
 
