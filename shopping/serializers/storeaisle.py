@@ -16,15 +16,14 @@ from .fields import (
 class StoreAisleSerializer(serializers.ModelSerializer):
 
     store = StoresOfUserPrimaryKeyRelatedField()
-    section = SectionsOfUserPrimaryKeyRelatedField(required=False)
 
     class Meta:
         model = StoreAisle
-        fields = ["id", "store", "section", "aisle_number"]
+        fields = ["id", "store", "aisle_number"]
         validators = [
             UniqueTogetherValidator(
                 queryset=StoreAisle.objects.all(),
-                fields=["store", "section"],
+                fields=["store"],
                 message="This Section already has an Aisle for that Store",
             )
         ]
