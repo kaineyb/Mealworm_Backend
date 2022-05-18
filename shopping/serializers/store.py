@@ -1,8 +1,7 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from ..models import Store, StoreAisle
-from .fields import StoresOfUserPrimaryKeyRelatedField
+from ..models import Store
 
 
 class StoreSerializer(serializers.ModelSerializer):
@@ -20,23 +19,3 @@ class UpdateStoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ["name"]
-
-
-class StoreAisleSerializer(serializers.ModelSerializer):
-
-    store = StoresOfUserPrimaryKeyRelatedField()
-
-    class Meta:
-        model = StoreAisle
-        fields = ["id", "store", "aisle_number"]
-
-    def create(self, request, *args, **kwargs):
-        section = self.context["section_id"]
-        with transaction.atomic():
-            return StoreAisle.objects.create(section_id=section, **self.validated_data)
-
-
-class UpdateStoreAisleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StoreAisle
-        fields = ["store", "aisle_number"]
