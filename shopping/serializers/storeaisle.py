@@ -17,13 +17,18 @@ class StoreAisleSerializer(serializers.ModelSerializer):
 
     store = StoresOfUserPrimaryKeyRelatedField()
 
+    @property
+    def section(self):
+        section_id = self.context["section_id"]
+        return serializers.HiddenField(default=section_id)
+
     class Meta:
         model = StoreAisle
-        fields = ["id", "store", "aisle_number"]
+        fields = ["id", "store", "section", "aisle_number"]
         validators = [
             UniqueTogetherValidator(
                 queryset=StoreAisle.objects.all(),
-                fields=["store"],
+                fields=["store", "section"],
                 message="This Section already has an Aisle for that Store",
             )
         ]
