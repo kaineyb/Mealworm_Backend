@@ -30,7 +30,7 @@ class StoreAisle(models.Model):
     models.UniqueConstraint(fields=["store", "section"], name="unique_store_aisle")
 
     class Meta:
-        ordering = ["aisle_number", "store__name"]
+        ordering = ["aisle_number", "section__name"]
 
     def __str__(self):
         return f"In {self.store} {self.section} is on Aisle {self.aisle_number}"

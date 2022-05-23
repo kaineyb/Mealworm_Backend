@@ -128,7 +128,7 @@ class TestAuthUser(APITestCase):
         store = baker.make(Store, user_id=1)
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
-        url = endpoint(section.id, store_aisle.id)
+        url = endpoint(store.id, store_aisle.id)
 
         response = self.client.get(url)
         assert response.status_code == status.HTTP_200_OK
