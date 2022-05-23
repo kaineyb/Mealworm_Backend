@@ -32,7 +32,7 @@ class StoreAisleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreAisle
-        fields = ["id", "aisle_number", "store", "section", "section_name"]
+        fields = ["store", "id", "aisle_number", "section", "section_name"]
 
         validators = [
             UniqueTogetherValidator(
