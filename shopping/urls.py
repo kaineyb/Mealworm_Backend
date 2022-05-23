@@ -8,12 +8,11 @@ n_router = nested_routers.DefaultRouter()
 
 # Stores and Sections
 n_router.register("stores", views.StoreViewSet, basename="store")
-n_router.register("sections", views.SectionViewSet, basename="section")
 
-section_router = nested_routers.NestedDefaultRouter(
-    n_router, "sections", lookup="section"
-)
-section_router.register("aisles", views.StoreAisleViewSet, basename="section-aisles")
+store_router = nested_routers.NestedDefaultRouter(n_router, "stores", lookup="stores")
+store_router.register("aisles", views.StoreAisleViewSet, basename="stores-aisles")
+
+n_router.register("sections", views.SectionViewSet, basename="section")
 
 
 # Plans and Nested Days
@@ -31,8 +30,6 @@ meals_router.register(
 )
 
 
-router_urls = (
-    n_router.urls + plans_router.urls + section_router.urls + meals_router.urls
-)
+router_urls = n_router.urls + plans_router.urls + store_router.urls + meals_router.urls
 
 urlpatterns = [path("get_all/", views.get_all), *router_urls]

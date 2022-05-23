@@ -7,7 +7,7 @@ from .meal_ingredients import *
 from .plan import *
 from .section import *
 from .store import *
-from .storeaisle import *
+from .store_aisle import *
 
 
 class GetAllSerializer(serializers.Serializer):

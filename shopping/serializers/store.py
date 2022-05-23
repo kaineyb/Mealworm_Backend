@@ -2,12 +2,15 @@ from django.db import transaction
 from rest_framework import serializers
 
 from ..models import Store
+from ..serializers.store_aisle import StoreAisleSerializer
 
 
 class StoreSerializer(serializers.ModelSerializer):
+    aisles = StoreAisleSerializer(many=True, required=False)
+
     class Meta:
         model = Store
-        fields = ["id", "name"]
+        fields = ["id", "name", "aisles"]
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():

@@ -97,7 +97,7 @@ class StoreAisleViewSet(ModelViewSet):
 
         return {
             "user_id": self.request.user.id,
-            "section_id": self.kwargs["section_pk"],
+            "stores_id": self.kwargs["stores_pk"],
         }
 
     def get_queryset(self):
@@ -105,7 +105,7 @@ class StoreAisleViewSet(ModelViewSet):
         Only show Days that were created by that user
         """
 
-        return models.StoreAisle.objects.filter(section_id=self.kwargs["section_pk"])
+        return models.StoreAisle.objects.filter(store_id=self.kwargs["stores_pk"])
 
 
 class PlanViewSet(ModelViewSet):

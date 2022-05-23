@@ -7,8 +7,8 @@ from setup import create_user
 from shopping.models import Section, Store, StoreAisle
 
 
-def endpoint(section_id: int, aisle_id: int = None):
-    list = f"/shopping/sections/{section_id}/aisles/"
+def endpoint(stores_id: int, aisle_id: int = None):
+    list = f"/shopping/stores/{stores_id}/aisles/"
     detail = list + f"{aisle_id}/"
 
     if not aisle_id:
@@ -23,6 +23,7 @@ class TestAnonUser(APITestCase):
         Ensure an anonymous user can not create an Aisle.
         """
 
+        store = baker.make(Store)
         section = baker.make(Section)
 
         data = {"store": 1, "aisle_number": 10}
@@ -59,16 +60,15 @@ class TestAuthUser(APITestCase):
         """
 
         section = baker.make(Section, user_id=1)
+        store = baker.make(Store, user_id=1)
+        url = endpoint(store.id)
 
-        data = {"store": "", "aisle_number": ""}
-        url = endpoint(section.id)
+        data = {"section": section.id, "aisle_number": ""}
 
         response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert (
-            response.data["store"] is not None
-        )  # Checks that we get an validation error.
+        assert response.data["aisle_number"] is not None
 
     def test_post_data_returns_valid_201_created(self):
         """
@@ -78,14 +78,14 @@ class TestAuthUser(APITestCase):
         section = baker.make(Section, user_id=1)
         store = baker.make(Store, user_id=1)
 
-        data = {"store": store.id, "aisle_number": 10}
-        url = endpoint(section.id)
+        data = {"section": section.id, "aisle_number": 10}
+        url = endpoint(store.id)
 
         response = self.client.post(url, data, format="json")
 
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["id"] > 0
-        assert response.data["store"] == data["store"]
+        assert response.data["section"] == data["section"]
         assert response.data["aisle_number"] == data["aisle_number"]
 
     def test_get_data_returns_valid_200_ok(self):
@@ -93,15 +93,16 @@ class TestAuthUser(APITestCase):
         # Create a Section/Aisle so we can test:
         section = baker.make(Section, user_id=1)
         store = baker.make(Store, user_id=1)
+
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
-        url = endpoint(section.id, store_aisle.id)
+        url = endpoint(store.id, store_aisle.id)
 
         response = self.client.get(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["id"] > 0
-        assert response.data["store"] == store.id
+        assert response.data["section"] == section.id
         assert response.data["aisle_number"] == store_aisle.aisle_number
 
     def test_patch_data_returns_valid_200_ok(self):
@@ -111,14 +112,13 @@ class TestAuthUser(APITestCase):
         store = baker.make(Store, user_id=1)
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
-        url = endpoint(section.id, store_aisle.id)
+        url = endpoint(store.id, store_aisle.id)
 
-        data = {"store": store.id, "aisle_number": 10}
+        data = {"aisle_number": 10}
 
         response = self.client.patch(url, data=data)
 
         assert response.status_code == status.HTTP_200_OK
-        assert response.data["store"] == data["store"]
         assert response.data["aisle_number"] == data["aisle_number"]
 
     def test_delete_data_returns_204_no_content(self):

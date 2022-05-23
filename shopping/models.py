@@ -23,11 +23,14 @@ class Section(models.Model):
 
 
 class StoreAisle(models.Model):
-    store = models.ForeignKey("Store", on_delete=models.CASCADE)
+    store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="aisles")
     section = models.ForeignKey("Section", on_delete=models.CASCADE)
     aisle_number = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
 
     models.UniqueConstraint(fields=["store", "section"], name="unique_store_aisle")
+
+    class Meta:
+        ordering = ["aisle_number", "store__name"]
 
     def __str__(self):
         return f"In {self.store} {self.section} is on Aisle {self.aisle_number}"
