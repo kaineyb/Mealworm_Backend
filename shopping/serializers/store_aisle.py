@@ -27,16 +27,12 @@ class StoreIdDefault:
 
 class StoreAisleSerializer(serializers.ModelSerializer):
     section = SectionsOfUserPrimaryKeyRelatedField()
+    section_name = serializers.SerializerMethodField()
     store = serializers.HiddenField(default=StoreIdDefault())
 
     class Meta:
         model = StoreAisle
-        fields = [
-            "id",
-            "aisle_number",
-            "store",
-            "section",
-        ]
+        fields = ["id", "aisle_number", "store", "section", "section_name"]
 
         validators = [
             UniqueTogetherValidator(
@@ -45,6 +41,9 @@ class StoreAisleSerializer(serializers.ModelSerializer):
                 message="This Store already has an Aisle number assigned to that Section",
             )
         ]
+
+    def get_section_name(self, aisle):
+        return aisle.section.name
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
