@@ -1,10 +1,8 @@
 from django.db import transaction
-from pytest import console_main
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from ..models import Store, StoreAisle
-from ..serializers.section import SectionSerializer
 from .fields import SectionsOfUserPrimaryKeyRelatedField
 
 # Sections Endpoint
