@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from . import models
 
 # Register your models here.
@@ -7,6 +8,7 @@ from . import models
 @admin.register(models.Store)
 class StoreAdmin(admin.ModelAdmin):
     autocomplete_fields = ["user"]
+
     search_fields = ["name__istartswith", "user__username"]
     list_filter = [
         "user__username",

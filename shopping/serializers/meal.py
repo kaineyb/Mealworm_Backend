@@ -13,7 +13,12 @@ class MealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Meal
-        fields = ["id", "name", "meal_ingredients"]
+        fields = [
+            "id",
+            "name",
+            "recipe",
+            "meal_ingredients",
+        ]
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():

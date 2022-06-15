@@ -119,6 +119,8 @@ class Meal(models.Model):
 
     name = models.CharField(max_length=255)
 
+    recipe = models.TextField(blank=True)
+
     def __str__(self):
         return self.name
 
