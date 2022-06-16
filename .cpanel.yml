@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - sh deploy.sh
+    - echo 'cPanel YML finished, deployment completed'
