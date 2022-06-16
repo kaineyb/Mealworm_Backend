@@ -27,6 +27,7 @@ function deploy_production() {
     source /home/arkus/virtualenv/python/api_mealworm/3.9/bin/activate && cd /home/arkus/python/api_mealworm
     pip install pipenv
     pipenv install
+    python manage.py migrate
 
     # Tell me that it worked...!
     echo "Production Deployed!"
