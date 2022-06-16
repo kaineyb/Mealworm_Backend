@@ -7,8 +7,7 @@ function get_branch() {
       # git symbolic-ref --short -q HEAD || echo "default_value";
 }
 
-function deploy_development() {
-}
+
 
 function deploy_production() {
     # Set Variables
@@ -39,10 +38,4 @@ echo $branch_name;
 if [ $branch_name == 'main' ]
 then 
     deploy_production
-fi
-
-if [ $branch_name == 'develop' ]
-then 
-    deploy_development
-    
 fi
