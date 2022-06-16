@@ -1,7 +1,5 @@
 import os
 
-import dj_database_url
-
 from .common import *
 
 DEBUG = False
@@ -14,4 +12,14 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
-DATABASES = {"default": dj_database_url.config(conn_max_age=600, ssl_require=True)}
+DATABASES = {
+    "default": {
+        "NAME": os.environ["DATABASE_NAME"],
+        "ENGINE": "mysql.connector.django",
+        "USER": os.environ["DATABASE_USER"],
+        "PASSWORD": os.environ["DATABASE_PASS"],
+        "OPTIONS": {
+            "autocommit": True,
+        },
+    }
+}

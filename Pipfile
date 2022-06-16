@@ -15,7 +15,7 @@ whitenoise = "*"
 gunicorn = "*"
 psycopg2 = "*"
 dj-database-url = "*"
-mysqlclient = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 black = "*"
