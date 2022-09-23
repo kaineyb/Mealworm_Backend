@@ -20,6 +20,7 @@ def create_user(self: APITestCase, user: dict):
     user["id"] = User.objects.get().id
     user["email"] = User.objects.get().email
     user["username"] = User.objects.get().username
+    user["password"] = data["password"]
 
     print(f"SetUp User ID is: {user['id']}")
 
