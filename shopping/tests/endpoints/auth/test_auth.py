@@ -1,3 +1,4 @@
+import pytest
 from core.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -8,6 +9,7 @@ class TestCreateUser(APITestCase):
 
     test_user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """Create a Test User"""
         create_user(self, self.test_user)

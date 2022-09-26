@@ -22,7 +22,6 @@ class TestAnonUser(APITestCase):
         """
         Ensure an anonymous user can not delete a Meal.
         """
-        user = baker.make(User)
         meal = baker.make_recipe("shopping.meal_one")
 
         response = self.client.delete(endpoint(meal.id), format="json")
@@ -34,6 +33,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing

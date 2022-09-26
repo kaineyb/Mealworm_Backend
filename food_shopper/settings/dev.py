@@ -16,8 +16,8 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",
         "USER": os.environ["DATABASE_USER"],
         "PASSWORD": os.environ["DATABASE_PASS"],
-        "OPTIONS": {
-            "autocommit": True,
-        },
+        # "OPTIONS": {
+        #     "autocommit": True,
+        # },
     }
 }

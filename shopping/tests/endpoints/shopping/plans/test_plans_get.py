@@ -1,6 +1,6 @@
 from typing import OrderedDict
 
-from core.models import User
+import pytest
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -36,6 +36,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -46,7 +47,7 @@ class TestAuthUser(APITestCase):
 
     def test_get_data_returns_valid_200_ok(self):
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
 
         url = endpoint(plan.id)
 
@@ -60,11 +61,11 @@ class TestAuthUser(APITestCase):
     def test_get_full_data_returns_valid_200_ok(self):
 
         # Arrange
-        plan = baker.make_recipe("shopping.plan_one")
+        plan = baker.make_recipe("shopping.plan_one", user_id=self.user_id)
 
-        meal_one = baker.make_recipe("shopping.meal_one")
-        meal_two = baker.make_recipe("shopping.meal_two")
-        meal_three = baker.make_recipe("shopping.meal_three")
+        meal_one = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
+        meal_two = baker.make_recipe("shopping.meal_two", user_id=self.user_id)
+        meal_three = baker.make_recipe("shopping.meal_three", user_id=self.user_id)
 
         day_one = baker.make(Day, order=1, meal_id=meal_one.id, plan_id=plan.id)
         day_two = baker.make(Day, order=2, meal_id=meal_two.id, plan_id=plan.id)
@@ -111,8 +112,8 @@ class TestAuthUser(APITestCase):
 
         # Arrange
 
-        plan = baker.make_recipe("shopping.plan_one")
-        meal = baker.make_recipe("shopping.meal_one")
+        plan = baker.make_recipe("shopping.plan_one", user_id=self.user_id)
+        meal = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
         day = baker.make(Day, plan_id=plan.id, meal_id=meal.id, order=1)
 
         url = endpoint(plan.id)

@@ -1,5 +1,7 @@
 from typing import OrderedDict
+from unittest.mock import ANY
 
+import pytest
 from core.models import User
 from model_bakery import baker
 from rest_framework import status
@@ -36,6 +38,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -101,9 +104,9 @@ class TestAuthUser(APITestCase):
         """
 
         # Arrange
-        meal_one = baker.make_recipe("shopping.meal_one")
-        meal_two = baker.make_recipe("shopping.meal_two")
-        meal_three = baker.make_recipe("shopping.meal_three")
+        meal_one = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
+        meal_two = baker.make_recipe("shopping.meal_two", user_id=self.user_id)
+        meal_three = baker.make_recipe("shopping.meal_three", user_id=self.user_id)
 
         days = [
             {"order": 1, "meal": meal_one.id},
@@ -125,12 +128,12 @@ class TestAuthUser(APITestCase):
 
         assert response.data["day_set"] == [
             OrderedDict(
-                [("id", 1), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
+                [("id", ANY), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
             ),
             OrderedDict(
-                [("id", 2), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
+                [("id", ANY), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
             ),
             OrderedDict(
-                [("id", 3), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
+                [("id", ANY), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
             ),
         ]

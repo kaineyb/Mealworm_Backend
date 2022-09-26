@@ -1,12 +1,9 @@
-from pprint import pprint
-from typing import OrderedDict
-
-from core.models import User
+import pytest
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
 from setup import create_user
-from shopping.models import Day, Plan
+from shopping.models import Plan
 
 
 def endpoint(plan_id=None):
@@ -36,6 +33,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -46,7 +44,9 @@ class TestAuthUser(APITestCase):
 
     def test_delete_data_returns_204_no_content(self):
 
-        plan = baker.make(Plan, user_id=1, name="Awesome Plan", start_day="Tues")
+        plan = baker.make(
+            Plan, user_id=self.user_id, name="Awesome Plan", start_day="Tues"
+        )
 
         url = endpoint(plan.id)
 

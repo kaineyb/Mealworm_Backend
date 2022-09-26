@@ -23,6 +23,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing

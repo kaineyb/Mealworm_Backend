@@ -1,4 +1,5 @@
 from typing import OrderedDict
+from unittest.mock import ANY
 
 import pytest
 from core.models import User
@@ -38,6 +39,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -51,7 +53,7 @@ class TestAuthUser(APITestCase):
         Ensure invalid data cannot be put to plans
         """
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
 
         data = {"name": "", "start_day": 1}
 
@@ -74,7 +76,7 @@ class TestAuthUser(APITestCase):
         Ensure valid data can be put
         """
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
 
         data = {"name": "My Awesome Plan", "start_day": "Tue"}
         url = endpoint(plan.id)
@@ -90,7 +92,7 @@ class TestAuthUser(APITestCase):
         Ensure valid data can be posted with a blank day_set
         """
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
         url = endpoint(plan.id)
 
         data = {"name": "My Awesome Plan", "start_day": "Tue", "day_set": []}
@@ -107,13 +109,13 @@ class TestAuthUser(APITestCase):
         Ensure valid data can be posted with a correct day_set
         """
 
-        plan = baker.make_recipe("shopping.plan_one")
+        plan = baker.make_recipe("shopping.plan_one", user_id=self.user_id)
         url = endpoint(plan.id)
 
         # Arrange
-        meal_one = baker.make_recipe("shopping.meal_one")
-        meal_two = baker.make_recipe("shopping.meal_two")
-        meal_three = baker.make_recipe("shopping.meal_three")
+        meal_one = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
+        meal_two = baker.make_recipe("shopping.meal_two", user_id=self.user_id)
+        meal_three = baker.make_recipe("shopping.meal_three", user_id=self.user_id)
 
         days = [
             {"order": 1, "meal": meal_one.id},
@@ -132,13 +134,13 @@ class TestAuthUser(APITestCase):
 
         assert response.data["day_set"] == [
             OrderedDict(
-                [("id", 1), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
+                [("id", ANY), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
             ),
             OrderedDict(
-                [("id", 2), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
+                [("id", ANY), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
             ),
             OrderedDict(
-                [("id", 3), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
+                [("id", ANY), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
             ),
         ]
 
@@ -149,13 +151,13 @@ class TestAuthUser(APITestCase):
         Ensure valid data can be posted with a correct day_set and a day already created
         """
 
-        plan = baker.make_recipe("shopping.plan_one")
+        plan = baker.make_recipe("shopping.plan_one", user_id=self.user_id)
         url = endpoint(plan.id)
 
         # Arrange
-        meal_one = baker.make_recipe("shopping.meal_one")
-        meal_two = baker.make_recipe("shopping.meal_two")
-        meal_three = baker.make_recipe("shopping.meal_three")
+        meal_one = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
+        meal_two = baker.make_recipe("shopping.meal_two", user_id=self.user_id)
+        meal_three = baker.make_recipe("shopping.meal_three", user_id=self.user_id)
 
         day_one = baker.make(Day, meal=meal_one, plan=plan)
 
@@ -176,13 +178,13 @@ class TestAuthUser(APITestCase):
 
         assert response.data["day_set"] == [
             OrderedDict(
-                [("id", 1), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
+                [("id", ANY), ("order", days[0]["order"]), ("meal", days[0]["meal"])]
             ),
             OrderedDict(
-                [("id", 2), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
+                [("id", ANY), ("order", days[1]["order"]), ("meal", days[1]["meal"])]
             ),
             OrderedDict(
-                [("id", 3), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
+                [("id", ANY), ("order", days[2]["order"]), ("meal", days[2]["meal"])]
             ),
         ]
 
@@ -191,12 +193,12 @@ class TestAuthUser(APITestCase):
         Ensure when we update the days, the other days are deleted, should work from the models.
         """
 
-        plan = baker.make_recipe("shopping.plan_one")
+        plan = baker.make_recipe("shopping.plan_one", user_id=self.user_id)
         url = endpoint(plan.id)
 
         # Arrange
-        meal_one = baker.make_recipe("shopping.meal_one")
-        meal_two = baker.make_recipe("shopping.meal_two")
+        meal_one = baker.make_recipe("shopping.meal_one", user_id=self.user_id)
+        meal_two = baker.make_recipe("shopping.meal_two", user_id=self.user_id)
 
         day_one = baker.make(Day, meal=meal_one, plan=plan, order=1)
         day_two = baker.make(Day, meal=meal_one, plan=plan, order=2)
@@ -222,21 +224,21 @@ class TestAuthUser(APITestCase):
         assert response.data["day_set"] == [
             OrderedDict(
                 [
-                    ("id", days[0]["order"]),
+                    ("id", ANY),
                     ("order", days[0]["order"]),
                     ("meal", days[0]["meal"]),
                 ]
             ),
             OrderedDict(
                 [
-                    ("id", days[1]["order"]),
+                    ("id", ANY),
                     ("order", days[1]["order"]),
                     ("meal", days[1]["meal"]),
                 ]
             ),
             OrderedDict(
                 [
-                    ("id", days[2]["order"]),
+                    ("id", ANY),
                     ("order", days[2]["order"]),
                     ("meal", days[2]["meal"]),
                 ]

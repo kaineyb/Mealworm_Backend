@@ -1,12 +1,9 @@
 import pytest
+from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from shopping.models import Ingredient, Plan, Day, Meal, Section
-
 from setup import create_user
-
-from model_bakery import baker
+from shopping.models import Day, Ingredient, Meal, Plan, Section
 
 
 def endpoint(ingredient_id=None):
@@ -23,6 +20,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing

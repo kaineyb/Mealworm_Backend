@@ -38,6 +38,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -51,7 +52,7 @@ class TestAuthUser(APITestCase):
         Ensure invalid data cannot be patched to plans
         """
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
 
         data = {"name": ""}
 
@@ -70,7 +71,7 @@ class TestAuthUser(APITestCase):
         Ensure valid data cab be patched to plans
         """
 
-        plan = baker.make(Plan, user_id=1)
+        plan = baker.make(Plan, user_id=self.user_id)
 
         data = {"name": "My New Plan Name"}
 

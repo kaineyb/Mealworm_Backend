@@ -1,5 +1,4 @@
 import pytest
-from core.models import User
 from model_bakery import baker
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -46,21 +45,22 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
         """
         create_user(self, self.user)
 
-        self.user_id = self.user["id"]
+        self.user_id: int = self.user["id"]
 
     def test_post_data_returns_invalid_400_bad_request(self):
         """
         Ensure invalid data cannot be posted
         """
 
-        section = baker.make(Section, user_id=1)
-        store = baker.make(Store, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
+        store = baker.make(Store, user_id=self.user_id)
         url = endpoint(store.id)
 
         data = {"section": section.id, "aisle_number": ""}
@@ -75,8 +75,8 @@ class TestAuthUser(APITestCase):
         Ensure valid data can be posted
         """
 
-        section = baker.make(Section, user_id=1)
-        store = baker.make(Store, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
+        store = baker.make(Store, user_id=self.user_id)
 
         data = {"section": section.id, "aisle_number": 10}
         url = endpoint(store.id)
@@ -91,8 +91,8 @@ class TestAuthUser(APITestCase):
     def test_get_data_returns_valid_200_ok(self):
 
         # Create a Section/Aisle so we can test:
-        section = baker.make(Section, user_id=1)
-        store = baker.make(Store, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
+        store = baker.make(Store, user_id=self.user_id)
 
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
@@ -108,8 +108,8 @@ class TestAuthUser(APITestCase):
     def test_patch_data_returns_valid_200_ok(self):
 
         # Create a Section/Aisle so we can test:
-        section = baker.make(Section, user_id=1)
-        store = baker.make(Store, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
+        store = baker.make(Store, user_id=self.user_id)
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
         url = endpoint(store.id, store_aisle.id)
@@ -124,8 +124,8 @@ class TestAuthUser(APITestCase):
     def test_delete_data_returns_204_no_content(self):
 
         # Create a Section/Aisle so we can test:
-        section = baker.make(Section, user_id=1)
-        store = baker.make(Store, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
+        store = baker.make(Store, user_id=self.user_id)
         store_aisle = baker.make(StoreAisle, store_id=store.id, section_id=section.id)
 
         url = endpoint(store.id, store_aisle.id)

@@ -43,6 +43,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -85,7 +86,7 @@ class TestAuthUser(APITestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert response.data["id"] > 0
         assert response.data["order"] == data["order"]
-        assert response.data["meal"] == data["order"]
+        assert response.data["meal"] == data["meal"]
 
     def test_get_data_returns_valid_200_ok(self):
 

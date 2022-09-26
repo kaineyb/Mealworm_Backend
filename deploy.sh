@@ -24,9 +24,46 @@ function deploy_production() {
     rm -r ~/python/api_mealworm/.git
 
     # prod python environment
-    source /home/arkus/virtualenv/python/api_mealworm/3.9/bin/activate && cd /home/arkus/python/api_mealworm
+    source /home2/arkus/virtualenv/python/api_mealworm/3.8/bin/activate && cd /home2/arkus/python/api_mealworm
+
+    # Can't use pipenv anymore?
+    # echo "##########"
+    # echo "installing pipenv"
+    # echo "##########"
+    # pip install pipenv
+
+    # echo "##########"
+    # echo "installing dependencies from lockfile"
+    # echo "##########"
+    # pipenv install
+
+
+    # echo "##########"
+    # echo "migrating django"
+    # echo "##########"
+    # echo "migrating django"
+    # python manage.py migrate
+
+    # # pip only solution
+    echo "##########"
+    echo "installing pipenv"
+    echo "##########"
     pip install pipenv
-    pipenv install
+
+    echo "##########"
+    echo "creating requirements"
+    echo "##########"
+    pipenv requirements > requirements.txt
+
+    echo "##########"
+    echo "installing packages using pip"
+    echo "##########"
+    pip install -r requirements.txt
+
+
+    echo "##########"
+    echo "migrating django"
+    echo "##########"
     python manage.py migrate
 
     # Tell me that it worked...!

@@ -47,6 +47,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db()
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -89,7 +90,7 @@ class TestAuthUser(APITestCase):
 
         data = {"ingredient": self.ingredient.id, "quantity": 1000, "unit": "g"}
 
-        url = endpoint()
+        url = endpoint(meal_id=self.meal.id)
 
         response = self.client.post(url, data, format="json")
 

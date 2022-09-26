@@ -32,6 +32,7 @@ class TestAuthUser(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -90,9 +91,15 @@ class TestAuthUser(APITestCase):
         We do first need the ingredient :)
         """
 
-        ingredient_one = baker.make_recipe("shopping.ingredient_one")
-        ingredient_two = baker.make_recipe("shopping.ingredient_two")
-        ingredient_three = baker.make_recipe("shopping.ingredient_three")
+        ingredient_one = baker.make_recipe(
+            "shopping.ingredient_one", user_id=self.user_id
+        )
+        ingredient_two = baker.make_recipe(
+            "shopping.ingredient_two", user_id=self.user_id
+        )
+        ingredient_three = baker.make_recipe(
+            "shopping.ingredient_three", user_id=self.user_id
+        )
 
         data = {
             "name": "My New Meal",

@@ -1,3 +1,4 @@
+import pytest
 from core.models import User
 from model_bakery import baker
 from rest_framework import status
@@ -35,6 +36,7 @@ class TestAuth(APITestCase):
     user = {}
     endpoint = "/shopping/stores/"
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -71,7 +73,7 @@ class TestAuth(APITestCase):
 
     def test_get_data_returns_valid_200_ok(self):
 
-        store = baker.make(Store, user_id=1)
+        store = baker.make(Store, user_id=self.user_id)
 
         response = self.client.get(f"{self.endpoint}{store.id}/")
 
@@ -79,7 +81,7 @@ class TestAuth(APITestCase):
 
     def test_patch_data_returns_valid_200_ok(self):
 
-        store = baker.make(Store, user_id=1)
+        store = baker.make(Store, user_id=self.user_id)
 
         data = {"name": "New Name"}
 
@@ -90,7 +92,7 @@ class TestAuth(APITestCase):
 
     def test_delete_data_returns_204_no_content(self):
 
-        store = baker.make(Store, user_id=1)
+        store = baker.make(Store, user_id=self.user_id)
 
         response = self.client.get(f"{self.endpoint}{store.id}/")
         assert response.status_code == status.HTTP_200_OK

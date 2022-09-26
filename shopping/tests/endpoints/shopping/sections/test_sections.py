@@ -1,3 +1,4 @@
+import pytest
 from core.models import User
 from model_bakery import baker
 from rest_framework import status
@@ -20,7 +21,7 @@ class TestAnon(APITestCase):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_if_anonymous_user_getting_returns_401_unauthorised(self):
+    def test_if_anonymous_user_getting_returns_401_unauthorized(self):
         """
         Ensure an anonymous user can not get any stores.
         """
@@ -34,6 +35,7 @@ class TestAuth(APITestCase):
 
     user = {}
 
+    @pytest.mark.django_db
     def setUp(self):
         """
         Create a User and Authenticate for Testing
@@ -70,7 +72,7 @@ class TestAuth(APITestCase):
 
     def test_get_data_returns_valid_200_ok(self):
 
-        section = baker.make(Section, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
 
         response = self.client.get(f"{ENDPOINT}{section.id}/")
 
@@ -78,7 +80,7 @@ class TestAuth(APITestCase):
 
     def test_patch_data_returns_valid_200_ok(self):
 
-        section = baker.make(Section, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
 
         data = {"name": "New Name"}
 
@@ -89,7 +91,7 @@ class TestAuth(APITestCase):
 
     def test_delete_data_returns_204_no_content(self):
 
-        section = baker.make(Section, user_id=1)
+        section = baker.make(Section, user_id=self.user_id)
 
         response = self.client.get(f"{ENDPOINT}{section.id}/")
         assert response.status_code == status.HTTP_200_OK

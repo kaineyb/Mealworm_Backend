@@ -5,16 +5,15 @@ name = "pypi"
 
 [packages]
 django = "*"
-django-debug-toolbar = "*"
 django-cors-headers = "*"
-djoser = "*"
+django-debug-toolbar = "*"
 djangorestframework = "*"
+djoser = "*"
 drf-nested-routers = "*"
-model-bakery = "*"
-whitenoise = "*"
 gunicorn = "*"
-psycopg2 = "*"
+model-bakery = "*"
 mysqlclient = "*"
+whitenoise = "*"
 
 [dev-packages]
 black = "*"
@@ -25,4 +24,4 @@ pytest-cov = "*"
 python-dotenv = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.7"
