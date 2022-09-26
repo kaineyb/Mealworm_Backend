@@ -15,7 +15,7 @@ CORS_ALLOWED_ORIGINS = [
 DATABASES = {
     "default": {
         "NAME": os.environ["DATABASE_NAME"],
-        "ENGINE": "django.db.backends.mysql",
+        "ENGINE": "mysql.connector.django",
         "USER": os.environ["DATABASE_USER"],
         "PASSWORD": os.environ["DATABASE_PASS"],
         "OPTIONS": {
