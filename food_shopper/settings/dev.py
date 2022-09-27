@@ -1,7 +1,9 @@
+import secrets
+
 from .common import *
 
 DEBUG = True
-SECRET_KEY = "XYZ"
+SECRET_KEY = secrets.token_urlsafe(16)
 
 DATABASES = {
     "default": {
