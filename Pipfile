@@ -13,7 +13,6 @@ drf-nested-routers = "*"
 model-bakery = "*"
 whitenoise = "*"
 gunicorn = "*"
-psycopg2 = "*"
 dj-database-url = "*"
 mysql-connector-python = "*"
 
