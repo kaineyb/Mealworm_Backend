@@ -1,7 +1,6 @@
+from core.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
-from core.models import User
-
 from setup import create_user
 
 
@@ -33,6 +32,23 @@ class TestCreateUser(APITestCase):
             User.objects.filter(username=data["username"]).get().username
             == data["username"]
         )
+
+    def test_jwt_create(self):
+        """Ensure JWT token works"""
+
+        url = "/auth/jwt/create"
+
+        data = {
+            "username": self.test_user["username"],
+            "password": self.test_user["password"],
+        }
+
+        response = self.client.post(url, data, format="json")
+
+        assert response.status_code == status.HTTP_200_OK
+
+        assert response.data["refresh"] != None
+        assert response.data["access"] != None
 
 
 class TestAnonUserInfo(APITestCase):

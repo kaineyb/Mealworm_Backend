@@ -14,8 +14,7 @@ model-bakery = "*"
 whitenoise = "*"
 gunicorn = "*"
 psycopg2 = "*"
-dj-database-url = "*"
-mysql-connector-python = "*"
+mysqlclient = "*"
 
 [dev-packages]
 black = "*"
@@ -23,6 +22,7 @@ pytest = "*"
 pytest-django = "*"
 pytest-watch = "*"
 pytest-cov = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.9"
