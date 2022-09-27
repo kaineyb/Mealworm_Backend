@@ -24,7 +24,7 @@ function deploy_production() {
     rm -r ~/python/api_mealworm/.git
 
     # prod python environment
-    source /home/arkus/virtualenv/python/api_mealworm/3.9/bin/activate && cd /home/arkus/python/api_mealworm
+    source /home2/arkus/virtualenv/python/api_mealworm/3.8/bin/activate && cd /home2/arkus/python/api_mealworm
     pip install pipenv
     pipenv install
     python manage.py migrate
