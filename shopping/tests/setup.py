@@ -1,5 +1,6 @@
-from core.models import User
 from rest_framework.test import APITestCase
+
+from core.models import User
 
 
 def create_user(self: APITestCase, user: dict):
