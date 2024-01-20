@@ -1,6 +1,6 @@
 Environment variables needed to run.
 
-```.env
+```bash
 DATABASE_NAME="DB_NAME_GOES_HERE"
 DATABASE_PASS="DB_PASS_GOES_HERE"
 DATABASE_USER="DB_USER_NAME_GOES_HERE"
